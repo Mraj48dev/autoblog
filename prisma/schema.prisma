@@ -13,3 +13,186 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// Authentication tables for NextAuth.js
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?   // For credentials auth
+  role          Role      @default(USER)
+  tokensBalance Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+  sites    Site[]
+  payments Payment[]
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
+
+// AutoBlog core tables
+enum Role {
+  USER
+  ADMIN
+}
+
+enum SiteType {
+  WORDPRESS
+  GENERIC
+}
+
+enum SourceType {
+  RSS
+  TELEGRAM
+  CALENDAR
+}
+
+enum ArticleStatus {
+  DRAFT
+  PUBLISHED
+  FAILED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model Site {
+  id        String     @id @default(cuid())
+  userId    String
+  name      String
+  url       String
+  type      SiteType   @default(GENERIC)
+  wpConfig  Json?      // WordPress credentials
+  status    String     @default("ACTIVE")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sources      Source[]
+  automations  Automation[]
+  articles     Article[]
+
+  @@map("sites")
+}
+
+model Source {
+  id       String     @id @default(cuid())
+  siteId   String
+  type     SourceType
+  name     String
+  config   Json       // RSS URL, Telegram channel, etc.
+  isActive Boolean    @default(true)
+  lastSync DateTime?
+
+  site     Site      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  articles Article[]
+
+  @@map("sources")
+}
+
+model Automation {
+  id                String  @id @default(cuid())
+  siteId            String
+  promptTemplate    String  @db.Text
+  imageSettings     Json
+  seoSettings       Json
+  publishingConfig  Json
+  isActive          Boolean @default(true)
+
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@map("automations")
+}
+
+model Article {
+  id             String        @id @default(cuid())
+  siteId         String
+  sourceId       String?
+  title          String
+  content        String        @db.Text
+  featuredImage  String?
+  seoData        Json?
+  status         ArticleStatus @default(DRAFT)
+  tokensUsed     Int           @default(0)
+  wordpressId    Int?
+  publishedAt    DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  site   Site    @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  source Source? @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+
+  @@map("articles")
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  userId          String
+  stripePaymentId String
+  amount          Decimal       @db.Decimal(10, 2)
+  tokensPurchased Int
+  status          PaymentStatus @default(PENDING)
+  createdAt       DateTime      @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model Log {
+  id        String   @id @default(cuid())
+  userId    String?
+  level     String   // INFO, WARN, ERROR
+  action    String
+  details   Json
+  timestamp DateTime @default(now())
+
+  @@map("logs")
+}
