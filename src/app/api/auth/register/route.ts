@@ -81,17 +81,27 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('Registration error details:', {
-      message: error.message,
-      code: error.code,
-      meta: error.meta,
-      stack: error.stack,
+      message: error instanceof Error ? error.message : String(error),
+      code:
+        error && typeof error === 'object' && 'code' in error
+          ? (error as { code: unknown }).code
+          : undefined,
+      meta:
+        error && typeof error === 'object' && 'meta' in error
+          ? (error as { meta: unknown }).meta
+          : undefined,
+      stack: error instanceof Error ? error.stack : undefined,
     })
 
     return NextResponse.json(
       {
         error: 'Internal server error',
         details:
-          process.env.NODE_ENV === 'development' ? error.message : undefined,
+          process.env.NODE_ENV === 'development'
+            ? error instanceof Error
+              ? error.message
+              : String(error)
+            : undefined,
       },
       { status: 500 }
     )
