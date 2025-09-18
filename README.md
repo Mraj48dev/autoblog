@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AutoBlog
 
-## Getting Started
+Webapp per l'automazione della produzione e pubblicazione di articoli su blog, siti news e piattaforme WordPress.
 
-First, run the development server:
+## 🚀 Tech Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Frontend/Backend**: Next.js 14 with App Router, TypeScript
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: NextAuth.js
+- **UI**: Tailwind CSS + Shadcn/ui
+- **Deployment**: Vercel
+- **Database Cloud**: Supabase
+
+## 🏗️ Development Setup
+
+1. **Clone e install**:
+
+   ```bash
+   git clone <your-repo>
+   cd autoblog/app
+   npm install
+   ```
+
+2. **Environment setup**:
+
+   ```bash
+   cp .env.example .env.local
+   # Edit .env.local with your values
+   ```
+
+3. **Database setup**:
+
+   ```bash
+   # Local development (Prisma dev)
+   npx prisma dev
+
+   # Or with Supabase
+   npx prisma db push
+   ```
+
+4. **Run development server**:
+   ```bash
+   npm run dev
+   ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📦 Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/                    # Next.js App Router
+├── modules/                # Feature modules
+│   ├── auth/              # Authentication
+│   ├── sites/             # Site management
+│   ├── sources/           # Content sources
+│   ├── automation/        # Automation engine
+│   ├── content/           # Content generation
+│   ├── publishing/        # Publishing system
+│   ├── content-viewer/    # Export/copy-paste
+│   ├── payments/          # Billing system
+│   └── admin/             # Admin panel
+└── shared/                # Shared components/utils
+```
 
-## Learn More
+## 🌐 Deployment
 
-To learn more about Next.js, take a look at the following resources:
+### Vercel (Recommended)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Push to GitHub**
+2. **Connect Vercel** to your GitHub repository
+3. **Set environment variables** in Vercel dashboard
+4. **Deploy automatically** on every push
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Environment Variables for Production
 
-## Deploy on Vercel
+```bash
+DATABASE_URL="your-supabase-database-url"
+NEXTAUTH_SECRET="your-nextauth-secret"
+NEXTAUTH_URL="https://your-app.vercel.app"
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📋 Commands
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run prettier` - Format with Prettier
+
+## 🎯 Current Status
+
+**Phase 1 - Foundation MVP**
+
+- ✅ Project Setup (Next.js, TypeScript, Tailwind, Shadcn)
+- ✅ Deployment Setup (Vercel + Supabase ready)
+- 🔄 Auth Module (in progress)
+- ⏳ Dashboard Skeleton
+- ⏳ Content Generation
+- ⏳ WordPress Integration
+
+## 🤝 Contributing
+
+1. Create feature branch
+2. Make changes
+3. Run linting: `npm run lint:fix`
+4. Commit with conventional commits
+5. Push and create PR
+
+## 📄 License
+
+Private project - All rights reserved.
