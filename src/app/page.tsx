@@ -156,7 +156,9 @@ export default function Home() {
                 </div>
               </div>
               <div className="mt-4 text-center">
-                <Button disabled>Dashboard (Coming Soon)</Button>
+                <Link href="/dashboard">
+                  <Button>Go to Dashboard</Button>
+                </Link>
               </div>
             </CardContent>
           </Card>
