@@ -4,12 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "prisma generate && next build --turbopack",
     "start": "next start",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "prettier": "prettier --write .",
     "prepare": "husky",
+    "postinstall": "prisma generate",
     "test": "echo \"No tests yet\""
   },
   "dependencies": {
