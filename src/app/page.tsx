@@ -1,3 +1,5 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -8,18 +10,47 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useSession, signOut } from 'next-auth/react'
+import Link from 'next/link'
 
 export default function Home() {
+  const { data: session, status } = useSession()
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
-            🚀 AutoBlog
-          </h1>
-          <p className="text-xl text-slate-600 dark:text-slate-400">
-            Automazione intelligente per la produzione di contenuti
-          </p>
+        {/* Header with Auth */}
+        <div className="flex justify-between items-center mb-12">
+          <div>
+            <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              🚀 AutoBlog
+            </h1>
+            <p className="text-xl text-slate-600 dark:text-slate-400">
+              Automazione intelligente per la produzione di contenuti
+            </p>
+          </div>
+
+          <div className="flex gap-2">
+            {status === 'loading' ? (
+              <Button disabled>Loading...</Button>
+            ) : session ? (
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-slate-600 dark:text-slate-400">
+                  Welcome, {session.user?.name || session.user?.email}!
+                </span>
+                <Button onClick={() => signOut()}>Sign Out</Button>
+              </div>
+            ) : (
+              <>
+                <Link href="/auth/signin">
+                  <Button variant="outline">Sign In</Button>
+                </Link>
+                <Link href="/auth/signup">
+                  <Button>Sign Up</Button>
+                </Link>
+              </>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
@@ -96,13 +127,47 @@ export default function Home() {
           </CardContent>
         </Card>
 
+        {/* Authenticated User Dashboard */}
+        {session && (
+          <Card className="max-w-2xl mx-auto mb-12">
+            <CardHeader>
+              <CardTitle>🎛️ Dashboard</CardTitle>
+              <CardDescription>
+                Manage your sites and automations
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                    0
+                  </p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Sites
+                  </p>
+                </div>
+                <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                  <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                    100
+                  </p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Tokens
+                  </p>
+                </div>
+              </div>
+              <div className="mt-4 text-center">
+                <Button disabled>Dashboard (Coming Soon)</Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         <div className="text-center mt-12">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            🏗️ Step 1.1 completato - Project Setup funzionante!
+            🏗️ Step 1.2 completato - Authentication funzionante!
           </p>
           <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
-            Next.js 14 + TypeScript + Tailwind + Shadcn/ui + Prisma + ESLint +
-            Prettier + Husky
+            Next.js 15 + NextAuth.js + Prisma + Shadcn/ui + TypeScript
           </p>
         </div>
       </div>
