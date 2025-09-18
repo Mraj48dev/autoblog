@@ -110,3 +110,5 @@ NEXTAUTH_URL="https://your-app.vercel.app"
 ## 📄 License
 
 Private project - All rights reserved.
+
+# Production database configured with Supabase
