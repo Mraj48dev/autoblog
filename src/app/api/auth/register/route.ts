@@ -13,15 +13,26 @@ const registerSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('=== Registration API Called ===')
+
     const body = await request.json()
+    console.log('Request body:', { ...body, password: '[HIDDEN]' })
+
     const { name, email, password } = registerSchema.parse(body)
+    console.log('Validation passed for:', { name, email })
 
     // Check if user already exists
+    console.log('Checking for existing user...')
     const existingUser = await prisma.user.findUnique({
       where: { email },
     })
+    console.log(
+      'Existing user check result:',
+      existingUser ? 'Found' : 'Not found'
+    )
 
     if (existingUser) {
+      console.log('User already exists, returning error')
       return NextResponse.json(
         { error: 'User with this email already exists' },
         { status: 400 }
@@ -29,9 +40,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Hash password
+    console.log('Hashing password...')
     const hashedPassword = await bcrypt.hash(password, 12)
+    console.log('Password hashed successfully')
 
     // Create user
+    console.log('Creating user in database...')
     const user = await prisma.user.create({
       data: {
         name,
@@ -48,6 +62,10 @@ export async function POST(request: NextRequest) {
         createdAt: true,
       },
     })
+    console.log('User created successfully:', {
+      id: user.id,
+      email: user.email,
+    })
 
     return NextResponse.json({
       message: 'User created successfully',
@@ -55,15 +73,26 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error('Validation error:', error.issues)
       return NextResponse.json(
         { error: 'Validation failed', details: error.issues },
         { status: 400 }
       )
     }
 
-    console.error('Registration error:', error)
+    console.error('Registration error details:', {
+      message: error.message,
+      code: error.code,
+      meta: error.meta,
+      stack: error.stack,
+    })
+
     return NextResponse.json(
-      { error: 'Internal server error' },
+      {
+        error: 'Internal server error',
+        details:
+          process.env.NODE_ENV === 'development' ? error.message : undefined,
+      },
       { status: 500 }
     )
   }
