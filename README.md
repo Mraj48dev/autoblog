@@ -38,6 +38,12 @@ Webapp per l'automazione della produzione e pubblicazione di articoli su blog, s
    npx prisma db push
    ```
 
+   **For Production/Supabase**: If `prisma db push` fails during deployment, manually run the SQL script in your Supabase SQL editor:
+   ```bash
+   # Copy contents of migrate.sql and run in Supabase dashboard
+   cat migrate.sql
+   ```
+
 4. **Run development server**:
    ```bash
    npm run dev
