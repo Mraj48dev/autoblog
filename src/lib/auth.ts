@@ -68,6 +68,16 @@ export const authOptions: NextAuthOptions = {
 }
 
 export async function getCurrentUser() {
-  const session = await getServerSession(authOptions)
-  return session?.user
+  try {
+    const session = await getServerSession(authOptions)
+    console.log('getCurrentUser session check:', {
+      hasSession: !!session,
+      userId: session?.user?.id,
+      userEmail: session?.user?.email
+    })
+    return session?.user
+  } catch (error) {
+    console.error('getCurrentUser error:', error)
+    return null
+  }
 }

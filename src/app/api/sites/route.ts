@@ -18,6 +18,13 @@ const createSiteSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
+    console.log('Environment check:', {
+      hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
+      hasNextAuthUrl: !!process.env.NEXTAUTH_URL,
+      hasDatabaseUrl: !!process.env.DATABASE_URL,
+      nodeEnv: process.env.NODE_ENV
+    })
+
     const user = await getCurrentUser()
 
     if (!user?.id) {
