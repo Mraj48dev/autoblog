@@ -13,7 +13,7 @@ const createSiteSchema = z.object({
     username: z.string().optional(),
     password: z.string().optional(),
     apiUrl: z.string().optional(),
-  }).optional(),
+  }).optional().nullable(),
 })
 
 export async function GET(request: NextRequest) {
@@ -86,7 +86,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     console.log('Create site request body:', JSON.stringify(body, null, 2))
 
-    const { name, url, type, wpConfig } = createSiteSchema.parse(body)
+    // Parse and validate the request
+    const validatedData = createSiteSchema.parse(body)
+    const { name, url, type } = validatedData
+
+    // Only extract wpConfig if it exists and site type is WORDPRESS
+    const wpConfig = type === 'WORDPRESS' && validatedData.wpConfig ? validatedData.wpConfig : null
 
     // Check if user already has a site with this URL
     const existingSite = await prisma.site.findFirst({
@@ -109,7 +114,7 @@ export async function POST(request: NextRequest) {
         url,
         type,
         userId: user.id,
-        wpConfig: wpConfig && type === 'WORDPRESS' ? wpConfig as any : null,
+        wpConfig: wpConfig as any,
       },
       select: {
         id: true,

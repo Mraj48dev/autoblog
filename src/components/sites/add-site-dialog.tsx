@@ -103,6 +103,7 @@ export function AddSiteDialog({ onSiteAdded }: AddSiteDialogProps) {
           apiUrl: data.wpApiUrl,
         }
       }
+      // Per GENERIC, non aggiungere wpConfig affatto
 
       const response = await fetch('/api/sites', {
         method: 'POST',
