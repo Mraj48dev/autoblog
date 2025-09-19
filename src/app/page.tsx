@@ -166,7 +166,7 @@ export default function Home() {
 
         <div className="text-center mt-12">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            🏗️ Step 1.2 completato - Authentication funzionante!
+            ✅ Step 2.1 completato - Site Management Module attivo!
           </p>
           <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
             Next.js 15 + NextAuth.js + Prisma + Shadcn/ui + TypeScript
