@@ -1,4 +1,4 @@
-import { NextAuthOptions } from 'next-auth'
+import { NextAuthOptions, getServerSession } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
@@ -65,4 +65,9 @@ export const authOptions: NextAuthOptions = {
       return session
     },
   },
+}
+
+export async function getCurrentUser() {
+  const session = await getServerSession(authOptions)
+  return session?.user
 }
