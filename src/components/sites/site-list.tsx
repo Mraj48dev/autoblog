@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { CardSkeleton } from '@/components/ui/skeleton'
 import { Globe, Settings, Trash2, ExternalLink } from 'lucide-react'
 import { AddSiteDialog } from './add-site-dialog'
+import { EditSiteDialog } from './edit-site-dialog'
 
 interface Site {
   id: string
@@ -16,6 +17,11 @@ interface Site {
   status: string
   createdAt: string
   updatedAt: string
+  wpConfig?: {
+    username?: string
+    password?: string
+    apiUrl?: string
+  }
   _count: {
     articles: number
     automations: number
@@ -26,6 +32,7 @@ export function SiteList() {
   const [sites, setSites] = useState<Site[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [editingSite, setEditingSite] = useState<Site | null>(null)
 
   const fetchSites = async () => {
     try {
@@ -158,7 +165,11 @@ export function SiteList() {
                 <span>Added {new Date(site.createdAt).toLocaleDateString()}</span>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setEditingSite(site)}
+                >
                   <Settings className="h-4 w-4 mr-2" />
                   Configure
                 </Button>
@@ -175,6 +186,15 @@ export function SiteList() {
           </CardContent>
         </Card>
       ))}
+
+      {editingSite && (
+        <EditSiteDialog
+          site={editingSite}
+          open={!!editingSite}
+          onOpenChange={(open) => !open && setEditingSite(null)}
+          onSiteUpdated={fetchSites}
+        />
+      )}
     </div>
   )
 }
