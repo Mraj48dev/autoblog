@@ -89,25 +89,27 @@ export function AddSiteDialog({ onSiteAdded }: AddSiteDialogProps) {
     setError(null)
 
     try {
-      const wpConfig = data.type === 'WORDPRESS'
-        ? {
-            username: data.wpUsername,
-            password: data.wpPassword,
-            apiUrl: data.wpApiUrl,
-          }
-        : null
+      const payload: any = {
+        name: data.name,
+        url: data.url,
+        type: data.type,
+      }
+
+      // Solo aggiungere wpConfig per WordPress
+      if (data.type === 'WORDPRESS') {
+        payload.wpConfig = {
+          username: data.wpUsername,
+          password: data.wpPassword,
+          apiUrl: data.wpApiUrl,
+        }
+      }
 
       const response = await fetch('/api/sites', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name: data.name,
-          url: data.url,
-          type: data.type,
-          wpConfig,
-        }),
+        body: JSON.stringify(payload),
       })
 
       if (!response.ok) {
@@ -133,7 +135,7 @@ export function AddSiteDialog({ onSiteAdded }: AddSiteDialogProps) {
           Add Site
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New Site</DialogTitle>
           <DialogDescription>
